@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Driver", "Driver", "{837BF4
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Kmdf", "Kmdf", "{6E61CD28-FEB2-4D68-9E47-006C401881F6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fts5cu56a", "driver\kmdf\fts5cu56a.vcxproj", "{64048006-1C5F-4262-823B-54310D7F3869}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fts1ba90a", "driver\kmdf\fts1ba90a.vcxproj", "{64048006-1C5F-4262-823B-54310D7F3869}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

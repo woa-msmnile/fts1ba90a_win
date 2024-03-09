@@ -29,13 +29,13 @@ BYTE cmd_reset[6] = { 0xFA, 0x20, 0x00, 0x00, 0x24, 0x81 };
 BYTE cmd_scanmode[3] = { 0xA0, 0x00, 0x01 };
 BYTE eventbuf[256];
 
-ULONG XRevert = 0;
+ULONG XRevert = 1;
 ULONG YRevert = 0;
 ULONG XYExchange = 0;
 ULONG XMin = 0;
-ULONG XMax = 4095;
+ULONG XMax = 2600;
 ULONG YMin = 0;
-ULONG YMax = 4095;
+ULONG YMax = 1600;
 
 
 typedef struct
@@ -1978,7 +1978,7 @@ Return Value:
     }
 }
 #pragma warning(disable:4214)
-/* FTS fts5cu56a */
+/* FTS fts1ba90a */
 struct fts_event_coordinate {
 	UCHAR eid:2;
 	UCHAR tid:4;
@@ -2042,6 +2042,7 @@ OnInterruptIsr(
     BYTE touchType;
     BYTE touchId;
     int x, y, temp;
+    int x1 = 0;
     UNREFERENCED_PARAMETER(MessageID);
     
     UCHAR *event_buff;
@@ -2081,7 +2082,7 @@ OnInterruptIsr(
         }
         //total event count
         readReport.DIG_TouchScreenContactCount = (BYTE)remain + 1;
-        
+
         for (int i = 0;i < (remain + 1);i++)
         {
             event_buff = (UCHAR *) &eventbuf[i * 16];
@@ -2095,7 +2096,7 @@ OnInterruptIsr(
                 touchId = p_event_coord->tid;
                 x = (p_event_coord->x_11_4 << 4) | (p_event_coord->x_3_0);
                 y = (p_event_coord->y_11_4 << 4) | (p_event_coord->y_3_0);
-
+                
                 if (XRevert == 1)
                     x = XMax - x;
                 if (YRevert == 1)
@@ -2106,7 +2107,7 @@ OnInterruptIsr(
                     x = y;
                     y = temp;
                 }
-
+                
                 switch (p_event_coord->tchsta)
                 {
                 case EVT_ID_ENTER_POINT:
@@ -2119,10 +2120,12 @@ OnInterruptIsr(
                 }
 
                 readReport.points[i * 6 + 1] = touchId;
-                readReport.points[i * 6 + 2] = x & 0xFF;
-                readReport.points[i * 6 + 3] = (x >> 8) & 0x0F;
-                readReport.points[i * 6 + 4] = y & 0xFF;
-                readReport.points[i * 6 + 5] = (y >> 8) & 0x0F;
+                // X
+                readReport.points[i * 6 + 2] = y & 0xFF;
+                readReport.points[i * 6 + 3] = (y >> 8) & 0x0F;
+                // Y
+                readReport.points[i * 6 + 4] = x1 & 0xFF;
+                readReport.points[i * 6 + 5] = (x1 >> 8) & 0x0F;
                 
                 break;
             }
