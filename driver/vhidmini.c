@@ -2042,7 +2042,6 @@ OnInterruptIsr(
     BYTE touchType;
     BYTE touchId;
     int x, y, temp;
-    int x1 = 0;
     UNREFERENCED_PARAMETER(MessageID);
     
     UCHAR *event_buff;
@@ -2098,7 +2097,7 @@ OnInterruptIsr(
                 y = (p_event_coord->y_11_4 << 4) | (p_event_coord->y_3_0);
                 
                 if (XRevert == 1)
-                    x = XMax - x;
+                    x = 1600 - x;
                 if (YRevert == 1)
                     y = YMax - y;
                 if (XYExchange == 1)
@@ -2124,8 +2123,8 @@ OnInterruptIsr(
                 readReport.points[i * 6 + 2] = y & 0xFF;
                 readReport.points[i * 6 + 3] = (y >> 8) & 0x0F;
                 // Y
-                readReport.points[i * 6 + 4] = x1 & 0xFF;
-                readReport.points[i * 6 + 5] = (x1 >> 8) & 0x0F;
+                readReport.points[i * 6 + 4] = x & 0xFF;
+                readReport.points[i * 6 + 5] = (x >> 8) & 0x0F;
                 
                 break;
             }
