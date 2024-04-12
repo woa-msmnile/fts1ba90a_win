@@ -22,6 +22,9 @@ Environment:
 #define EVT_ID_MOTION_POINT					0x2	/*Touch motion (a specific touch changed position)*/
 #define EVT_ID_LEAVE_POINT					0x3	/*Touch leave the sensing area*/
 
+#define FTS_FIFO_MAX			31
+#define FTS_EVENT_SIZE			16
+
 BYTE cmd_readoneevent[1] = { 0x60 };
 BYTE cmd_readallevents[1] = { 0x61 };
 BYTE cmd_clearallevents[1] = { 0x62 };
@@ -1991,7 +1994,7 @@ struct fts_event_coordinate {
 	UCHAR minor;
 	UCHAR z:6;
 	UCHAR ttype_3_2:2;
-	UCHAR left_event:5;
+	UCHAR left_event:6;
 	UCHAR max_energy:1;
 	UCHAR ttype_1_0:2;
 	UCHAR noise_level;
@@ -2070,21 +2073,21 @@ OnInterruptIsr(
         //
 
         //get all event data
-        SpbWriteRead(pDevice, cmd_readoneevent, 1, &eventbuf[0], 16, 0);
-        remain = eventbuf[7] & 0x1F;
+        SpbWriteRead(pDevice, cmd_readoneevent, 1, &eventbuf[0], FTS_EVENT_SIZE, 0);
+        remain = eventbuf[7] & 0x3F;
         if (remain > 0)
         {
             if (remain > 9)
                 remain = 9;
             
-            SpbWriteRead(pDevice, cmd_readallevents, 1, &eventbuf[16], (USHORT)(16 * remain), 0);
+            SpbWriteRead(pDevice, cmd_readallevents, 1, &eventbuf[FTS_EVENT_SIZE], (USHORT)(FTS_EVENT_SIZE * remain), 0);
         }
         //total event count
         readReport.DIG_TouchScreenContactCount = (BYTE)remain + 1;
 
         for (int i = 0;i < (remain + 1);i++)
         {
-            event_buff = (UCHAR *) &eventbuf[i * 16];
+            event_buff = (UCHAR *) &eventbuf[i * FTS_EVENT_SIZE];
             event_id = event_buff[0] & 0x3;
             switch (event_id) {
             case 0:
