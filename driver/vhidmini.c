@@ -530,7 +530,8 @@ Return Value:
 
     deviceContext = GetDeviceContext(device);
     deviceContext->Device       = device;
-    deviceContext->DeviceData   = 0;
+    deviceContext->DeviceData = 0;
+    deviceContext->OnClose = FALSE;
 
     hidAttributes = &deviceContext->HidDeviceAttributes;
     RtlZeroMemory(hidAttributes, sizeof(HID_DEVICE_ATTRIBUTES));
@@ -741,6 +742,7 @@ NTSTATUS
                 OnInterruptIsr,
                 NULL);
 
+            interruptConfig.ReportInactiveOnPowerDown = TRUE;
             interruptConfig.PassiveHandling = TRUE;
             interruptConfig.InterruptTranslated = WdfCmResourceListGetDescriptor(
                 FxResourcesTranslated,
@@ -2053,6 +2055,8 @@ OnInterruptIsr(
 
     device = WdfInterruptGetDevice(FxInterrupt);
     pDevice = GetDeviceContext(device);
+    if (pDevice->OnClose)
+        return TRUE;
 
     //
     // Notify the app that an interrupt has occurred.
@@ -2213,7 +2217,7 @@ SpbDeviceClose(
     _In_  PDEVICE_CONTEXT  pDevice
 )
 {
-    WdfInterruptDisable(pDevice->Interrupt);
+    pDevice->OnClose = TRUE;
 
     WdfIoTargetClose(pDevice->SpbController);
 }

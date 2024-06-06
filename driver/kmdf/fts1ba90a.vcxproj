@@ -266,7 +266,7 @@
     <ResourceCompile Include="fts1ba90a.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Inf Exclude="@(Inf)" Include="*.inx" />
+    <Inf Exclude="@(Inf)" Include="fts1ba90a.inf" />
     <FilesToPackage Include="$(TargetPath)" Condition="'$(ConfigurationType)'=='Driver' or '$(ConfigurationType)'=='DynamicLibrary'" />
   </ItemGroup>
   <ItemGroup>
